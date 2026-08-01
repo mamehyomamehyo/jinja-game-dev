@@ -1,0 +1,159 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/managers/ShopManager.js
+ * 授与所管理
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class ShopManager {
+
+        /**
+         * @param {GameData} gameData
+         * @param {ItemData} itemData
+         * @param {InventoryManager} inventoryManager
+         */
+        constructor(gameData, itemData, inventoryManager) {
+
+            this.gameData = gameData;
+            this.itemData = itemData;
+            this.inventory = inventoryManager;
+        }
+
+        /**
+         * 商品一覧
+         */
+        getItems() {
+
+            return this.itemData.getAll();
+        }
+
+        /**
+         * 商品取得
+         * @param {string} itemId
+         */
+        getItem(itemId) {
+
+            return this.itemData.get(itemId);
+        }
+
+        /**
+         * 購入可能判定
+         * @param {string} itemId
+         * @param {number} quantity
+         */
+        canBuy(itemId, quantity = 1) {
+
+            const item = this.itemData.get(itemId);
+
+            if (!item) {
+                return false;
+            }
+
+            const price = item.price * quantity;
+
+            return this.gameData.status.money >= price;
+        }
+
+        /**
+         * 購入
+         * @param {string} itemId
+         * @param {number} quantity
+         */
+        buy(itemId, quantity = 1) {
+
+            const item = this.itemData.get(itemId);
+
+            if (!item) {
+                return {
+                    success: false,
+                    message: "商品が存在しません。"
+                };
+            }
+
+            const totalPrice = item.price * quantity;
+
+            if (!this.gameData.spendMoney(totalPrice)) {
+
+                return {
+                    success: false,
+                    message: "お金が足りません。"
+                };
+            }
+
+            for (let i = 0; i < quantity; i++) {
+
+                this.inventory.add(itemId);
+            }
+
+            this.gameData.addStat("purchaseCount");
+
+            return {
+                success: true,
+                item,
+                quantity,
+                totalPrice,
+                message: `${item.name}を購入しました。`
+            };
+        }
+
+        /**
+         * 売却可能判定
+         * （v1.0では売却なし）
+         */
+        canSell(itemId) {
+
+            return false;
+        }
+
+        /**
+         * 売却
+         */
+        sell(itemId, quantity = 1) {
+
+            return {
+                success: false,
+                message: "売却はできません。"
+            };
+        }
+
+        /**
+         * 所持金
+         */
+        getMoney() {
+
+            return this.gameData.status.money;
+        }
+
+        /**
+         * 所持金追加
+         */
+        addMoney(value) {
+
+            this.gameData.addMoney(value);
+        }
+
+        /**
+         * 所持金使用
+         */
+        spendMoney(value) {
+
+            return this.gameData.spendMoney(value);
+        }
+
+        /**
+         * リセット
+         */
+        reset() {
+
+            // v1.0では状態を保持しないため処理なし
+        }
+
+    }
+
+    window.ShopManager = ShopManager;
+
+})();
