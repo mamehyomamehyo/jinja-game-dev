@@ -1,0 +1,224 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/ui/Panel.js
+ * パネルUIコンポーネント
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class Panel {
+
+        /**
+         * @param {number} x
+         * @param {number} y
+         * @param {number} width
+         * @param {number} height
+         * @param {Object} options
+         */
+        constructor(
+            x,
+            y,
+            width,
+            height,
+            options = {}
+        ) {
+
+            this.x = x;
+            this.y = y;
+
+            this.width = width;
+            this.height = height;
+
+            this.visible = true;
+
+            this.background =
+                options.background ?? "#ffffff";
+
+            this.border =
+                options.border ?? "#666666";
+
+            this.borderWidth =
+                options.borderWidth ?? 2;
+
+            this.alpha =
+                options.alpha ?? 1.0;
+
+            this.padding =
+                options.padding ?? 8;
+
+            this.children = [];
+        }
+
+        /**
+         * 子要素追加
+         * @param {Object} child
+         */
+        add(child) {
+
+            if (!child) {
+                return;
+            }
+
+            this.children.push(child);
+
+            return child;
+        }
+
+        /**
+         * 子要素削除
+         * @param {Object} child
+         */
+        remove(child) {
+
+            const index = this.children.indexOf(child);
+
+            if (index !== -1) {
+                this.children.splice(index, 1);
+            }
+        }
+
+        /**
+         * 子要素全削除
+         */
+        clear() {
+
+            this.children.length = 0;
+        }
+
+        /**
+         * 更新
+         * @param {number} delta
+         * @param {Input} input
+         */
+        update(delta, input) {
+
+            if (!this.visible) {
+                return;
+            }
+
+            for (const child of this.children) {
+
+                if (
+                    child &&
+                    typeof child.update === "function"
+                ) {
+                    child.update(delta, input);
+                }
+            }
+        }
+
+        /**
+         * 描画
+         * @param {Renderer} renderer
+         */
+        render(renderer) {
+
+            if (!this.visible) {
+                return;
+            }
+
+            renderer.save();
+
+            renderer.alpha(this.alpha);
+
+            renderer.rect(
+                this.x,
+                this.y,
+                this.width,
+                this.height,
+                this.background
+            );
+
+            renderer.strokeRect(
+                this.x,
+                this.y,
+                this.width,
+                this.height,
+                this.border,
+                this.borderWidth
+            );
+
+            for (const child of this.children) {
+
+                if (
+                    child &&
+                    typeof child.render === "function"
+                ) {
+                    child.render(renderer);
+                }
+            }
+
+            renderer.restore();
+        }
+
+        /**
+         * 当たり判定
+         */
+        contains(x, y) {
+
+            return (
+                x >= this.x &&
+                x <= this.x + this.width &&
+                y >= this.y &&
+                y <= this.y + this.height
+            );
+        }
+
+        /**
+         * 座標変更
+         */
+        setPosition(x, y) {
+
+            this.x = x;
+            this.y = y;
+        }
+
+        /**
+         * サイズ変更
+         */
+        setSize(width, height) {
+
+            this.width = width;
+            this.height = height;
+        }
+
+        /**
+         * 表示
+         */
+        show() {
+
+            this.visible = true;
+        }
+
+        /**
+         * 非表示
+         */
+        hide() {
+
+            this.visible = false;
+        }
+
+        /**
+         * 表示切替
+         */
+        toggle() {
+
+            this.visible = !this.visible;
+        }
+
+        /**
+         * 透明度
+         */
+        setAlpha(alpha) {
+
+            this.alpha = Utils.clamp(alpha, 0, 1);
+        }
+
+    }
+
+    window.Panel = Panel;
+
+})();
