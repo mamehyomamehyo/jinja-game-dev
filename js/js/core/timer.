@@ -1,0 +1,137 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/core/timer.js
+ * タイマー管理
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class TimerManager {
+
+        constructor() {
+
+            this.timers = [];
+        }
+
+        /**
+         * タイマー追加
+         * @param {number} duration 秒
+         * @param {Function} callback
+         * @param {boolean} repeat
+         */
+        add(duration, callback, repeat = false) {
+
+            const timer = {
+                duration,
+                remaining: duration,
+                callback,
+                repeat,
+                active: true
+            };
+
+            this.timers.push(timer);
+
+            return timer;
+        }
+
+        /**
+         * 更新
+         * @param {number} delta 秒
+         */
+        update(delta) {
+
+            for (let i = this.timers.length - 1; i >= 0; i--) {
+
+                const timer = this.timers[i];
+
+                if (!timer.active) {
+                    continue;
+                }
+
+                timer.remaining -= delta;
+
+                if (timer.remaining > 0) {
+                    continue;
+                }
+
+                if (typeof timer.callback === "function") {
+                    timer.callback();
+                }
+
+                if (timer.repeat) {
+
+                    timer.remaining += timer.duration;
+
+                } else {
+
+                    this.timers.splice(i, 1);
+                }
+            }
+        }
+
+        /**
+         * 停止
+         */
+        stop(timer) {
+
+            if (timer) {
+                timer.active = false;
+            }
+        }
+
+        /**
+         * 再開
+         */
+        start(timer) {
+
+            if (timer) {
+                timer.active = true;
+            }
+        }
+
+        /**
+         * リセット
+         */
+        reset(timer) {
+
+            if (timer) {
+                timer.remaining = timer.duration;
+            }
+        }
+
+        /**
+         * 削除
+         */
+        remove(timer) {
+
+            const index = this.timers.indexOf(timer);
+
+            if (index !== -1) {
+                this.timers.splice(index, 1);
+            }
+        }
+
+        /**
+         * 全削除
+         */
+        clear() {
+
+            this.timers.length = 0;
+        }
+
+        /**
+         * タイマー数
+         */
+        count() {
+
+            return this.timers.length;
+        }
+
+    }
+
+    window.TimerManager = TimerManager;
+
+})();
