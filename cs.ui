@@ -1,0 +1,72 @@
+/* ==========================
+   UI Root
+========================== */
+
+#ui-root{
+    position:fixed;
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:100;
+}
+
+
+/* ==========================
+   共通UI
+========================== */
+
+.panel{
+    background:rgba(20,20,30,.75);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:12px;
+
+    backdrop-filter:blur(8px);
+}
+
+
+/* ==========================
+   ボタン
+========================== */
+
+.button{
+
+    pointer-events:auto;
+
+    cursor:pointer;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:10px 18px;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    color:white;
+
+    background:#8b0000;
+
+    transition:.2s;
+}
+
+.button:active{
+
+    transform:scale(.96);
+
+}
+
+
+/* ==========================
+   非表示
+========================== */
+
+.hidden{
+
+    display:none;
+
+}
