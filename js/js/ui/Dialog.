@@ -1,0 +1,205 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/ui/Dialog.js
+ * ダイアログUIコンポーネント
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class Dialog {
+
+        /**
+         * @param {number} x
+         * @param {number} y
+         * @param {number} width
+         * @param {number} height
+         * @param {string} title
+         * @param {string} message
+         */
+        constructor(
+            x,
+            y,
+            width,
+            height,
+            title = "",
+            message = ""
+        ) {
+
+            this.panel = new Panel(
+                x,
+                y,
+                width,
+                height,
+                {
+                    background: "#ffffff",
+                    border: "#444444",
+                    borderWidth: 2
+                }
+            );
+
+            this.visible = false;
+
+            this.title = title;
+            this.message = message;
+
+            this.onConfirm = null;
+            this.onCancel = null;
+
+            this.confirmButton = new Button(
+                x + width - 220,
+                y + height - 60,
+                90,
+                36,
+                "OK",
+                () => this.confirm()
+            );
+
+            this.cancelButton = new Button(
+                x + width - 110,
+                y + height - 60,
+                90,
+                36,
+                "キャンセル",
+                () => this.cancel()
+            );
+        }
+
+        /**
+         * 更新
+         * @param {number} delta
+         * @param {Input} input
+         */
+        update(delta, input) {
+
+            if (!this.visible) {
+                return;
+            }
+
+            this.confirmButton.update(input);
+            this.cancelButton.update(input);
+        }
+
+        /**
+         * 描画
+         * @param {Renderer} renderer
+         */
+        render(renderer) {
+
+            if (!this.visible) {
+                return;
+            }
+
+            this.panel.render(renderer);
+
+            renderer.text(
+                this.title,
+                this.panel.x + 20,
+                this.panel.y + 36,
+                {
+                    size: 24,
+                    color: "#222222"
+                }
+            );
+
+            renderer.text(
+                this.message,
+                this.panel.x + 20,
+                this.panel.y + 80,
+                {
+                    size: 20,
+                    color: "#444444"
+                }
+            );
+
+            this.confirmButton.render(renderer);
+            this.cancelButton.render(renderer);
+        }
+
+        /**
+         * OK
+         */
+        confirm() {
+
+            this.hide();
+
+            if (typeof this.onConfirm === "function") {
+                this.onConfirm();
+            }
+        }
+
+        /**
+         * キャンセル
+         */
+        cancel() {
+
+            this.hide();
+
+            if (typeof this.onCancel === "function") {
+                this.onCancel();
+            }
+        }
+
+        /**
+         * タイトル変更
+         */
+        setTitle(title) {
+
+            this.title = title;
+        }
+
+        /**
+         * メッセージ変更
+         */
+        setMessage(message) {
+
+            this.message = message;
+        }
+
+        /**
+         * OKイベント
+         */
+        setOnConfirm(callback) {
+
+            this.onConfirm = callback;
+        }
+
+        /**
+         * キャンセルイベント
+         */
+        setOnCancel(callback) {
+
+            this.onCancel = callback;
+        }
+
+        /**
+         * 表示
+         */
+        show() {
+
+            this.visible = true;
+        }
+
+        /**
+         * 非表示
+         */
+        hide() {
+
+            this.visible = false;
+        }
+
+        /**
+         * 表示中判定
+         */
+        isVisible() {
+
+            return this.visible;
+        }
+
+    }
+
+    window.Dialog = Dialog;
+
+})();
