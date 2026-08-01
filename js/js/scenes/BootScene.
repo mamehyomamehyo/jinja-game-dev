@@ -1,0 +1,132 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/scenes/BootScene.js
+ * 起動シーン
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class BootScene {
+
+        constructor(game) {
+
+            this.game = game;
+
+            this.renderer = new Renderer(
+                game.getContext()
+            );
+
+            this.progress = 0;
+            this.loaded = false;
+        }
+
+        /**
+         * シーン開始
+         */
+        enter() {
+
+            this.progress = 0;
+            this.loaded = false;
+
+            this.load();
+        }
+
+        /**
+         * リソース読込
+         */
+        async load() {
+
+            try {
+
+                // --------------------------------------------------
+                // 必要に応じてここへ画像・JSON等を追加
+                // --------------------------------------------------
+                // await assets.loadImages([...]);
+                // await assets.loadJsons([...]);
+                // --------------------------------------------------
+
+                this.progress = 1;
+                this.loaded = true;
+
+            } catch (error) {
+
+                console.error(error);
+            }
+        }
+
+        /**
+         * 更新
+         */
+        update(delta) {
+
+            if (!this.loaded) {
+                return;
+            }
+
+            this.game
+                .getSceneManager()
+                .change("title");
+        }
+
+        /**
+         * 描画
+         */
+        render() {
+
+            this.renderer.clear("#f8f4e6");
+
+            this.renderer.text(
+                "神社ゲーム",
+                CONFIG.GAME_WIDTH / 2,
+                CONFIG.GAME_HEIGHT / 2 - 40,
+                {
+                    align: "center",
+                    size: 42,
+                    color: "#222222"
+                }
+            );
+
+            this.renderer.strokeRect(
+                CONFIG.GAME_WIDTH / 2 - 150,
+                CONFIG.GAME_HEIGHT / 2 + 20,
+                300,
+                24,
+                "#333333",
+                2
+            );
+
+            this.renderer.rect(
+                CONFIG.GAME_WIDTH / 2 - 148,
+                CONFIG.GAME_HEIGHT / 2 + 22,
+                296 * this.progress,
+                20,
+                "#3d8b3d"
+            );
+
+            this.renderer.text(
+                `${Math.floor(this.progress * 100)}%`,
+                CONFIG.GAME_WIDTH / 2,
+                CONFIG.GAME_HEIGHT / 2 + 70,
+                {
+                    align: "center",
+                    size: 18,
+                    color: "#333333"
+                }
+            );
+        }
+
+        /**
+         * シーン終了
+         */
+        exit() {
+
+        }
+
+    }
+
+    window.BootScene = BootScene;
+
+})();
