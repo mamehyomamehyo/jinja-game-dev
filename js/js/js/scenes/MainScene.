@@ -1,0 +1,119 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/scenes/MainScene.js
+ * メインゲームシーン
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class MainScene {
+
+        constructor(game) {
+
+            this.game = game;
+
+            this.renderer = game.getRenderer();
+            this.input = game.input;
+
+            this.entities = new EntityManager();
+
+            this.elapsed = 0;
+        }
+
+        /**
+         * シーン開始
+         */
+        enter() {
+
+            this.elapsed = 0;
+            this.entities.clear();
+        }
+
+        /**
+         * 更新
+         */
+        update(delta) {
+
+            this.elapsed += delta;
+
+            this.entities.update(delta);
+
+            // タイトルへ戻る
+            if (this.input.isPressed("Escape")) {
+
+                this.game
+                    .getSceneManager()
+                    .change("title");
+            }
+        }
+
+        /**
+         * 描画
+         */
+        render() {
+
+            this.renderer.clear("#eef7e8");
+
+            this.renderer.text(
+                "神社ゲーム",
+                CONFIG.GAME_WIDTH / 2,
+                60,
+                {
+                    align: "center",
+                    size: 36,
+                    color: "#222222"
+                }
+            );
+
+            this.renderer.text(
+                "Main Scene",
+                CONFIG.GAME_WIDTH / 2,
+                110,
+                {
+                    align: "center",
+                    size: 22,
+                    color: "#666666"
+                }
+            );
+
+            this.renderer.text(
+                "ここからゲーム本編が始まります",
+                CONFIG.GAME_WIDTH / 2,
+                220,
+                {
+                    align: "center",
+                    size: 26,
+                    color: "#333333"
+                }
+            );
+
+            this.renderer.text(
+                "ESC：タイトルへ戻る",
+                CONFIG.GAME_WIDTH / 2,
+                CONFIG.GAME_HEIGHT - 80,
+                {
+                    align: "center",
+                    size: 20,
+                    color: "#444444"
+                }
+            );
+
+            this.entities.render(this.renderer);
+        }
+
+        /**
+         * シーン終了
+         */
+        exit() {
+
+            this.entities.clear();
+        }
+
+    }
+
+    window.MainScene = MainScene;
+
+})();
