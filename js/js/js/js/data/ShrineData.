@@ -1,0 +1,183 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/data/ShrineData.js
+ * 神社マスターデータ
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class ShrineData {
+
+        constructor() {
+
+            this.shrines = [];
+
+            this.loadDefault();
+        }
+
+        /**
+         * 初期データ
+         */
+        loadDefault() {
+
+            this.shrines = [
+
+                {
+                    id: "home",
+                    name: "氏神神社",
+                    prefecture: "",
+                    unlocked: true,
+                    visited: false,
+                    faith: 0,
+                    level: 1,
+                    description: "あなたの氏神様をお祀りする神社です。"
+                },
+
+                {
+                    id: "ise",
+                    name: "伊勢神宮",
+                    prefecture: "三重県",
+                    unlocked: false,
+                    visited: false,
+                    faith: 0,
+                    level: 1,
+                    description: "日本を代表する神宮。"
+                },
+
+                {
+                    id: "izumo",
+                    name: "出雲大社",
+                    prefecture: "島根県",
+                    unlocked: false,
+                    visited: false,
+                    faith: 0,
+                    level: 1,
+                    description: "縁結びで広く知られる大社。"
+                },
+
+                {
+                    id: "atsuta",
+                    name: "熱田神宮",
+                    prefecture: "愛知県",
+                    unlocked: false,
+                    visited: false,
+                    faith: 0,
+                    level: 1,
+                    description: "草薙神剣を祀る神宮。"
+                }
+
+            ];
+        }
+
+        /**
+         * 全取得
+         */
+        getAll() {
+
+            return [...this.shrines];
+        }
+
+        /**
+         * ID検索
+         */
+        get(id) {
+
+            return this.shrines.find(
+                shrine => shrine.id === id
+            ) || null;
+        }
+
+        /**
+         * 解放
+         */
+        unlock(id) {
+
+            const shrine = this.get(id);
+
+            if (!shrine) {
+                return false;
+            }
+
+            shrine.unlocked = true;
+
+            return true;
+        }
+
+        /**
+         * 解放済み一覧
+         */
+        getUnlocked() {
+
+            return this.shrines.filter(
+                shrine => shrine.unlocked
+            );
+        }
+
+        /**
+         * 参拝記録
+         */
+        visit(id) {
+
+            const shrine = this.get(id);
+
+            if (!shrine) {
+                return false;
+            }
+
+            shrine.visited = true;
+
+            return true;
+        }
+
+        /**
+         * 信仰値加算
+         */
+        addFaith(id, value) {
+
+            const shrine = this.get(id);
+
+            if (!shrine) {
+                return false;
+            }
+
+            shrine.faith += value;
+
+            if (shrine.faith < 0) {
+                shrine.faith = 0;
+            }
+
+            return true;
+        }
+
+        /**
+         * レベル設定
+         */
+        setLevel(id, level) {
+
+            const shrine = this.get(id);
+
+            if (!shrine) {
+                return false;
+            }
+
+            shrine.level = Math.max(1, level);
+
+            return true;
+        }
+
+        /**
+         * リセット
+         */
+        reset() {
+
+            this.loadDefault();
+        }
+
+    }
+
+    window.ShrineData = ShrineData;
+
+})();
