@@ -1,0 +1,173 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/scenes/MapScene.js
+ * マップシーン
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class MapScene {
+
+        constructor(game) {
+
+            this.game = game;
+
+            this.renderer = game.getRenderer();
+            this.input = game.input;
+
+            this.entities = new EntityManager();
+
+            this.cursor = 0;
+
+            // 仮マップ（後でデータ読込へ置き換え）
+            this.locations = [
+                { name: "神社", scene: "shrine" },
+                { name: "町", scene: null },
+                { name: "山", scene: null },
+                { name: "川", scene: null },
+                { name: "戻る", scene: "main" }
+            ];
+        }
+
+        /**
+         * シーン開始
+         */
+        enter() {
+
+            this.cursor = 0;
+            this.entities.clear();
+        }
+
+        /**
+         * 更新
+         */
+        update(delta) {
+
+            this.entities.update(delta);
+
+            if (this.input.isPressed("ArrowUp")) {
+
+                this.cursor--;
+
+                if (this.cursor < 0) {
+                    this.cursor = this.locations.length - 1;
+                }
+            }
+
+            if (this.input.isPressed("ArrowDown")) {
+
+                this.cursor++;
+
+                if (this.cursor >= this.locations.length) {
+                    this.cursor = 0;
+                }
+            }
+
+            if (
+                this.input.isPressed("Enter") ||
+                this.input.isPressed("Space")
+            ) {
+                this.select();
+            }
+
+            if (this.input.isPressed("Escape")) {
+
+                this.game
+                    .getSceneManager()
+                    .change("main");
+            }
+        }
+
+        /**
+         * 選択実行
+         */
+        select() {
+
+            const item = this.locations[this.cursor];
+
+            if (!item.scene) {
+                return;
+            }
+
+            this.game
+                .getSceneManager()
+                .change(item.scene);
+        }
+
+        /**
+         * 描画
+         */
+        render() {
+
+            this.renderer.clear("#e6f3ff");
+
+            this.renderer.text(
+                "マップ",
+                CONFIG.GAME_WIDTH / 2,
+                70,
+                {
+                    align: "center",
+                    size: 40,
+                    color: "#222222"
+                }
+            );
+
+            for (let i = 0; i < this.locations.length; i++) {
+
+                const selected = i === this.cursor;
+
+                if (selected) {
+
+                    this.renderer.rect(
+                        CONFIG.GAME_WIDTH / 2 - 170,
+                        140 + i * 55,
+                        340,
+                        40,
+                        "#d9ecff"
+                    );
+                }
+
+                this.renderer.text(
+                    this.locations[i].name,
+                    CONFIG.GAME_WIDTH / 2,
+                    167 + i * 55,
+                    {
+                        align: "center",
+                        size: 24,
+                        color: selected
+                            ? "#0066cc"
+                            : "#333333"
+                    }
+                );
+            }
+
+            this.renderer.text(
+                "↑↓：移動　Enter：決定　ESC：戻る",
+                CONFIG.GAME_WIDTH / 2,
+                CONFIG.GAME_HEIGHT - 40,
+                {
+                    align: "center",
+                    size: 18,
+                    color: "#666666"
+                }
+            );
+
+            this.entities.render(this.renderer);
+        }
+
+        /**
+         * シーン終了
+         */
+        exit() {
+
+            this.entities.clear();
+        }
+
+    }
+
+    window.MapScene = MapScene;
+
+})();
