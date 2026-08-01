@@ -1,0 +1,148 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/ui/Label.js
+ * ラベルUIコンポーネント
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class Label {
+
+        /**
+         * @param {number} x
+         * @param {number} y
+         * @param {string} text
+         * @param {Object} options
+         */
+        constructor(x, y, text = "", options = {}) {
+
+            this.x = x;
+            this.y = y;
+
+            this.text = text;
+
+            this.visible = true;
+
+            this.size = options.size ?? 24;
+            this.color = options.color ?? "#222222";
+            this.align = options.align ?? "left";
+            this.baseline = options.baseline ?? "alphabetic";
+            this.font = options.font ?? "sans-serif";
+
+            this.alpha = options.alpha ?? 1.0;
+        }
+
+        /**
+         * 更新
+         */
+        update(delta) {
+            // 将来のアニメーション用
+        }
+
+        /**
+         * 描画
+         * @param {Renderer} renderer
+         */
+        render(renderer) {
+
+            if (!this.visible) {
+                return;
+            }
+
+            renderer.save();
+
+            renderer.alpha(this.alpha);
+
+            renderer.text(
+                this.text,
+                this.x,
+                this.y,
+                {
+                    size: this.size,
+                    color: this.color,
+                    align: this.align,
+                    baseline: this.baseline,
+                    font: this.font
+                }
+            );
+
+            renderer.restore();
+        }
+
+        /**
+         * テキスト変更
+         * @param {string} text
+         */
+        setText(text) {
+
+            this.text = String(text);
+        }
+
+        /**
+         * 色変更
+         * @param {string} color
+         */
+        setColor(color) {
+
+            this.color = color;
+        }
+
+        /**
+         * フォントサイズ変更
+         * @param {number} size
+         */
+        setSize(size) {
+
+            this.size = size;
+        }
+
+        /**
+         * 座標変更
+         */
+        setPosition(x, y) {
+
+            this.x = x;
+            this.y = y;
+        }
+
+        /**
+         * 表示
+         */
+        show() {
+
+            this.visible = true;
+        }
+
+        /**
+         * 非表示
+         */
+        hide() {
+
+            this.visible = false;
+        }
+
+        /**
+         * 表示切替
+         */
+        toggle() {
+
+            this.visible = !this.visible;
+        }
+
+        /**
+         * 透明度変更
+         * @param {number} alpha
+         */
+        setAlpha(alpha) {
+
+            this.alpha = Utils.clamp(alpha, 0, 1);
+        }
+
+    }
+
+    window.Label = Label;
+
+})();
