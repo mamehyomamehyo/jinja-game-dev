@@ -1,0 +1,154 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/managers/PrayerManager.js
+ * 参拝・賽銭・祈願管理
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class PrayerManager {
+
+        /**
+         * @param {GameData} gameData
+         * @param {ShrineManager} shrineManager
+         */
+        constructor(gameData, shrineManager) {
+
+            this.gameData = gameData;
+            this.shrineManager = shrineManager;
+
+            this.lastPrayer = null;
+
+            this.defaultDonation = 5;
+
+            this.maxDonation = 100000;
+        }
+
+        /**
+         * 参拝
+         * @param {number} donation
+         */
+        pray(donation = this.defaultDonation) {
+
+            donation = Math.floor(donation);
+
+            if (donation < 0) {
+                donation = 0;
+            }
+
+            donation = Math.min(
+                donation,
+                this.maxDonation
+            );
+
+            if (!this.gameData.spendMoney(donation)) {
+
+                return {
+                    success: false,
+                    message: "所持金が足りません。"
+                };
+            }
+
+            const result = this.shrineManager.pray();
+
+            if (!result.success) {
+                return result;
+            }
+
+            const faith = this.calculateFaith(donation);
+
+            this.gameData.addFaith(faith);
+
+            this.lastPrayer = {
+                shrineId: result.shrineId,
+                shrineName: result.shrineName,
+                donation,
+                faith,
+                time: Date.now()
+            };
+
+            return {
+                success: true,
+                donation,
+                faith,
+                shrineId: result.shrineId,
+                shrineName: result.shrineName,
+                message:
+                    `${donation}円を奉納し参拝しました。`
+            };
+        }
+
+        /**
+         * 信仰値計算
+         * @param {number} donation
+         */
+        calculateFaith(donation) {
+
+            if (donation <= 0) {
+                return 1;
+            }
+
+            return Math.max(
+                1,
+                Math.floor(Math.sqrt(donation))
+            );
+        }
+
+        /**
+         * 最終参拝
+         */
+        getLastPrayer() {
+
+            return this.lastPrayer;
+        }
+
+        /**
+         * デフォルト賽銭
+         */
+        setDefaultDonation(value) {
+
+            this.defaultDonation = Math.max(
+                0,
+                Math.floor(value)
+            );
+        }
+
+        getDefaultDonation() {
+
+            return this.defaultDonation;
+        }
+
+        /**
+         * 賽銭可能判定
+         * @param {number} donation
+         */
+        canPray(donation = this.defaultDonation) {
+
+            return this.gameData.status.money >= donation;
+        }
+
+        /**
+         * 今日の参拝回数
+         * （v1.0では累計値）
+         */
+        getPrayerCount() {
+
+            return this.gameData.statistics.prayerCount;
+        }
+
+        /**
+         * リセット
+         */
+        reset() {
+
+            this.lastPrayer = null;
+        }
+
+    }
+
+    window.PrayerManager = PrayerManager;
+
+})();
