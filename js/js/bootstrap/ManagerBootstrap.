@@ -1,0 +1,269 @@
+/**
+ * ==========================================================
+ * 神社ゲーム v1.0
+ * File: js/bootstrap/ManagerBootstrap.js
+ * マネージャ初期化
+ * ==========================================================
+ */
+
+(() => {
+    "use strict";
+
+    class ManagerBootstrap {
+
+        /**
+         * マネージャ初期化
+         * @param {App} app
+         */
+        static initialize(app) {
+
+            if (!app) {
+
+                throw new Error(
+                    "ManagerBootstrap: App が指定されていません。"
+                );
+            }
+
+            /*
+             * ==================================================
+             * GameContext
+             * ==================================================
+             */
+
+            app.context =
+                new GameContext();
+
+            /*
+             * ==================================================
+             * 基本マネージャ
+             * ==================================================
+             */
+
+            app.playerManager =
+                new PlayerManager(
+                    app.gameData
+                );
+
+            app.inventoryManager =
+                new InventoryManager(
+                    app.gameData,
+                    app.itemData
+                );
+
+            app.shopManager =
+                new ShopManager(
+                    app.playerManager,
+                    app.inventoryManager,
+                    app.itemData
+                );
+
+            app.shrineManager =
+                new ShrineManager(
+                    app.gameData,
+                    app.shrineData,
+                    app.inventoryManager
+                );
+
+            app.fortuneManager =
+                new FortuneManager(
+                    app.fortuneData,
+                    app.playerManager
+                );
+
+            /*
+             * ==================================================
+             * 既存マネージャ
+             * （存在する場合のみ生成）
+             * ==================================================
+             */
+
+            if (typeof PrayerManager !== "undefined") {
+
+                app.prayerManager =
+                    new PrayerManager(
+                        app.gameData,
+                        app.shrineManager
+                    );
+            }
+
+            if (typeof GameEventManager !== "undefined") {
+
+                app.eventManager =
+                    new GameEventManager(
+                        app.gameData,
+                        app.eventData
+                    );
+            }
+
+            if (typeof AchievementManager !== "undefined") {
+
+                app.achievementManager =
+                    new AchievementManager(
+                        app.gameData,
+                        app.achievementData
+                    );
+            }
+
+            if (typeof QuestManager !== "undefined") {
+
+                app.questManager =
+                    new QuestManager(
+                        app.gameData
+                    );
+            }
+
+            if (typeof GoshuinManager !== "undefined") {
+
+                app.goshuinManager =
+                    new GoshuinManager(
+                        app.gameData,
+                        app.goshuinData
+                    );
+            }
+
+            if (typeof KamidanaManager !== "undefined") {
+
+                app.kamidanaManager =
+                    new KamidanaManager(
+                        app.gameData,
+                        app.inventoryManager
+                    );
+            }
+
+            if (typeof StatisticsManager !== "undefined") {
+
+                app.statisticsManager =
+                    new StatisticsManager(
+                        app.gameData
+                    );
+            }
+
+            if (typeof NotificationManager !== "undefined") {
+
+                app.notificationManager =
+                    new NotificationManager();
+            }
+
+            /*
+             * ==================================================
+             * SaveManager
+             * ==================================================
+             */
+
+            app.saveManager =
+                new SaveManager();
+
+            /*
+             * ==================================================
+             * Manager一覧
+             * ==================================================
+             */
+
+            app.managers = {
+
+                playerManager:
+                    app.playerManager,
+
+                inventoryManager:
+                    app.inventoryManager,
+
+                shopManager:
+                    app.shopManager,
+
+                shrineManager:
+                    app.shrineManager,
+
+                fortuneManager:
+                    app.fortuneManager,
+
+                prayerManager:
+                    app.prayerManager,
+
+                eventManager:
+                    app.eventManager,
+
+                achievementManager:
+                    app.achievementManager,
+
+                questManager:
+                    app.questManager,
+
+                goshuinManager:
+                    app.goshuinManager,
+
+                kamidanaManager:
+                    app.kamidanaManager,
+
+                statisticsManager:
+                    app.statisticsManager,
+
+                notificationManager:
+                    app.notificationManager,
+
+                saveManager:
+                    app.saveManager
+
+            };
+
+            /*
+             * ==================================================
+             * GameContext登録
+             * ==================================================
+             */
+
+            app.context.registerManagers(
+                app.managers
+            );
+
+            /*
+             * ==================================================
+             * SaveManager登録
+             * ==================================================
+             */
+
+            for (const [name, manager] of Object.entries(app.managers)) {
+
+                if (manager) {
+
+                    app.saveManager.register(
+                        name,
+                        manager
+                    );
+                }
+            }
+
+        }
+
+        /**
+         * Manager取得
+         * @param {App} app
+         * @param {string} name
+         */
+        static get(app, name) {
+
+            if (
+                !app ||
+                !app.managers
+            ) {
+
+                return null;
+            }
+
+            return app.managers[name] ?? null;
+        }
+
+        /**
+         * 全Manager取得
+         * @param {App} app
+         */
+        static getAll(app) {
+
+            return app.managers;
+        }
+
+    }
+
+    window.ManagerBootstrap =
+        ManagerBootstrap;
+
+})();
